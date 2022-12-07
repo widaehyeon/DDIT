@@ -19,7 +19,7 @@ class DaoEmp:
             select 
                 e_id, e_name, sex, addr 
             from 
-                semp
+                emp
             where
                 e_id = '{e_id}'
         """
@@ -38,8 +38,8 @@ class DaoEmp:
         """
         self.cur.execute(sql)
         self.conn.commit()
-        count = self.cur.rowcount
-        return count
+        
+        return self.cur.rowcount
     
     def update(self, e_id, e_name, sex, addr):
         
@@ -47,7 +47,7 @@ class DaoEmp:
             update emp 
             set e_name= '{e_name}',
                 sex = '{sex}',
-                addr = '{addr} 
+                addr = '{addr}'
             where e_id='{e_id}'
             """
             
