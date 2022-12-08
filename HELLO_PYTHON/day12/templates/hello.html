@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+	function fn_list(){
+		var postdata;
+	
+		 $.ajax({
+             type: 'POST',
+             url: 'ajax',
+             data: JSON.stringify(postdata),
+             dataType : 'JSON',
+             contentType: "application/json",
+             success: function(data){
+             	
+            	var list = data.list;
+            	
+            	var html ="";
+            	for(var i=0; i<list.length;i++){
+            		var e = list[i];
+		       		html += `
+		       		<tr>
+		       			<td><a href="#" onclick="fn_one(${e.e_id});"> ${e.e_id}</a></td>
+		       			<td>${e.e_name}</td>
+		       			<td>${e.sex}</td>
+		       			<td>${e.addr}</td>    			
+		       		</tr>
+		       		`;
+            	}
+	       		document.getElementById("my_tbody").innerHTML = html;
+            	
+             },
+             error: function(request, status, error){
+                console.log(error);
+             }
+         });
+
+	}
+	
+	function fn_one(e_id){
+		var param = {'e_id' : e_id}
+		
+		 $.ajax({
+            type: 'POST',
+            url: 'ajax_one',
+            data: JSON.stringify(param),
+            dataType : 'JSON',
+            contentType: "application/json",
+            success: function(data){
+            	var emp = data.emp;
+            	
+            	var obj_e_id   = document.querySelector("#e_id");
+            	var obj_e_name = document.querySelector("#e_name");
+            	var obj_sex    = document.querySelector("#sex");
+            	var obj_addr   = document.querySelector("#addr");
+            	
+            	obj_e_id.value   = emp.e_id;
+            	obj_e_name.value = emp.e_name;
+            	obj_sex.value    = emp.sex;
+            	obj_addr.value   = emp.addr;
+           	
+            },
+            error: function(request, status, error){
+               console.log(error);
+            }
+        });
+	}
+	
+function fn_add(){
+	var v_e_id 	= document.querySelector("#e_id");
+	var v_e_name= document.querySelector("#e_name");
+	var v_sex 	= document.querySelector("#sex");
+	var v_addr	= document.querySelector("#addr");
+	
+	var postadd = {
+			'e_id'	 : v_e_id.value,
+			'e_name' : v_e_name.value,
+			'sex'	 : v_sex.value,
+			'addr' 	 : v_addr.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_add',
+           data: JSON.stringify(postadd),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("추가 성공했습니다.")
+           	fn_list();
+           	v_e_id.value= "";
+           	v_e_name.value = "";
+           	v_sex.value = "";
+           	v_addr.value = "";
+           } else{
+           	alert("추가 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+
+function fn_edit(e_id){
+	var v_e_id 	= document.querySelector("#e_id");
+	var v_e_name= document.querySelector("#e_name");
+	var v_sex 	= document.querySelector("#sex");
+	var v_addr	= document.querySelector("#addr");
+	
+	var postedit = {
+			'e_id'	 : v_e_id.value,
+			'e_name' : v_e_name.value,
+			'sex'	 : v_sex.value,
+			'addr' 	 : v_addr.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_edit',
+           data: JSON.stringify(postedit),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("수정 성공했습니다.")
+           	fn_list();
+           	v_e_id.value = " ";
+           	v_e_name.value = " ";
+           	v_sex.value = " ";
+           	v_addr.value = " ";
+           } else{
+           	alert("수정 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+
+function fn_delete(){
+	var v_e_id 	= document.querySelector("#e_id");
+	var v_e_name= document.querySelector("#e_name");
+	var v_sex 	= document.querySelector("#sex");
+	var v_addr	= document.querySelector("#addr");
+	
+	var postdel = {
+			'e_id'	 : v_e_id.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_delete',
+           data: JSON.stringify(postdel),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("삭제 성공했습니다.")
+           	fn_list();
+           	v_e_id.value = " ";
+           	v_e_name.value = " ";
+           	v_sex.value = " ";
+           	v_addr.value = " ";
+           	
+           } else{
+           	alert("삭제 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+	
+</script>
+</head>
+<body onload="fn_list()">
+<table border="1px">
+	<thead>
+		<tr>
+			<td>사번</td>
+			<td>이름</td>
+			<td>성별</td>
+			<td>주소</td>
+		</tr>
+	</thead>
+	<tbody id="my_tbody">
+		<tr>
+			<td colspan="4">검색된 데이터가 없습니다.</td>			
+		</tr>
+	</tbody>
+</table>
+
+<table border="1px">
+	<tr>
+		<td>사번</td>
+		<td>
+			<input type="text" id="e_id" />		
+		</td>
+	</tr>
+	<tr>
+		<td>이름</td>
+		<td>
+			<input type="text" id="e_name" />		
+		</td>
+	</tr>
+	<tr>
+		<td>성별</td>
+		<td>
+			<input type="text" id="sex" />		
+		</td>
+	</tr>
+	<tr>
+		<td>주소</td>
+		<td>
+			<input type="text" id="addr" />		
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<input type="button" value="추가" onclick="fn_add()"/>
+			<input type="button" value="수정" onclick="fn_edit()"/>
+			<input type="button" value="삭제" onclick="fn_delete()"/>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
