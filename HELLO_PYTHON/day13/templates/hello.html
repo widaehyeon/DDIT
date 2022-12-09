@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+<script>
+	function fn_list(){
+		var postdata;
+	
+		 $.ajax({
+             type: 'POST',
+             url: 'list',
+             data: JSON.stringify(postdata),
+             dataType : 'JSON',
+             contentType: "application/json",
+             success: function(data){
+             	
+            	var list = data.list;
+            	
+            	var html ="";
+            	for(var i=0; i<list.length;i++){
+            		var s = list[i];
+		       		html += `
+		       		<tr>
+		       			<td><a href="#" onclick="fn_one(${s.s_id});"> ${s.s_id}</a></td>
+		       			<td>${s.s_name}</td>
+		       			<td>${s.mobile}</td>
+		       			<td>${s.address}</td>    			
+		       		</tr>
+		       		`;
+            	}
+	       		document.getElementById("my_tbody").innerHTML = html;
+            	
+             },
+             error: function(request, status, error){
+                console.log(error);
+             }
+         });
+
+	}
+	
+	function fn_one(s_id){
+		var param = {'s_id' : s_id}
+		
+		 $.ajax({
+            type: 'POST',
+            url: 'ajax_one',
+            data: JSON.stringify(param),
+            dataType : 'JSON',
+            contentType: "application/json",
+            success: function(data){
+            	var student = data.student;
+            	
+            	var obj_s_id   = document.querySelector("#s_id");
+            	var obj_s_name = document.querySelector("#s_name");
+            	var obj_mobile    = document.querySelector("#mobile");
+            	var obj_address   = document.querySelector("#address");
+            	
+            	obj_s_id.value   = student.s_id;
+            	obj_s_name.value = student.s_name;
+            	obj_mobile.value = student.mobile;
+            	obj_address.value= student.address;
+           	
+            },
+            error: function(request, status, error){
+               console.log(error);
+            }
+        });
+	}
+	
+function fn_add(){
+	var v_s_id 		= document.querySelector("#s_id");
+	var v_s_name	= document.querySelector("#s_name");
+	var v_mobile	= document.querySelector("#mobile");
+	var v_address	= document.querySelector("#address");
+	
+	var postadd = {
+			's_id'	  : v_s_id.value,
+			's_name'  : v_s_name.value,
+			'mobile'  : v_mobile.value,
+			'address' : v_address.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_add',
+           data: JSON.stringify(postadd),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("추가 성공했습니다.")
+           	fn_list();
+           	v_s_id.value= "";
+           	v_s_name.value = "";
+           	v_mobile.value = "";
+           	v_address.value = "";
+           } else{
+           	alert("추가 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+
+function fn_edit(e_id){
+	var v_s_id 	= document.querySelector("#s_id");
+	var v_s_name= document.querySelector("#s_name");
+	var v_mobile 	= document.querySelector("#mobile");
+	var v_address	= document.querySelector("#address");
+	
+	var postedit = {
+			's_id'	 : v_s_id.value,
+			's_name' : v_s_name.value,
+			'mobile'	 : v_mobile.value,
+			'address' 	 : v_address.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_edit',
+           data: JSON.stringify(postedit),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("수정 성공했습니다.")
+           	fn_list();
+           	v_s_id.value = " ";
+           	v_s_name.value = " ";
+           	v_mobile.value = " ";
+           	v_address.value = " ";
+           } else{
+           	alert("수정 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+
+function fn_delete(){
+	var v_s_id 	= document.querySelector("#s_id");
+	var v_s_name= document.querySelector("#s_name");
+	var v_mobile 	= document.querySelector("#mobile");
+	var v_address	= document.querySelector("#address");
+	
+	var postdel = {
+			's_id'	 : v_s_id.value
+	};
+	
+	 $.ajax({
+           type: 'POST',
+           url: 'ajax_delete',
+           data: JSON.stringify(postdel),
+           dataType : 'JSON',
+           contentType: "application/json",
+           success: function(data){
+           
+           if(data.cnt == 1){
+           	alert("삭제 성공했습니다.")
+           	fn_list();
+           	v_s_id.value = " ";
+           	v_s_name.value = " ";
+           	v_mobile.value = " ";
+           	v_address.value = " ";
+           	
+           } else{
+           	alert("삭제 실패했습니다.")
+           }
+          	
+           },
+           error: function(request, status, error){
+              console.log(error);
+           }
+       });
+}
+	
+</script>
+</head>
+<body onload="fn_list()">
+<table border="1px">
+	<thead>
+		<tr>
+			<td>아이디</td>
+			<td>이름</td>
+			<td>핸드폰</td>
+			<td>주소</td>
+		</tr>
+	</thead>
+	<tbody id="my_tbody">
+		<tr>
+			<td colspan="4">검색된 데이터가 없습니다.</td>			
+		</tr>
+	</tbody>
+</table>
+
+<table border="1px">
+	<tr>
+		<td>아이디</td>
+		<td>
+			<input type="text" id="s_id" />		
+		</td>
+	</tr>
+	<tr>
+		<td>이름</td>
+		<td>
+			<input type="text" id="s_name" />		
+		</td>
+	</tr>
+	<tr>
+		<td>핸드폰</td>
+		<td>
+			<input type="text" id="mobile" />		
+		</td>
+	</tr>
+	<tr>
+		<td>주소</td>
+		<td>
+			<input type="text" id="address" />		
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<input type="button" value="추가" onclick="fn_add()"/>
+			<input type="button" value="수정" onclick="fn_edit()"/>
+			<input type="button" value="삭제" onclick="fn_delete()"/>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
